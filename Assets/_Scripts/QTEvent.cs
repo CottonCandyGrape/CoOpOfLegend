@@ -5,24 +5,25 @@ using UnityEngine.UI;
 
 public enum EventType
 {
-    KakaoTalk,
     Call,
+    KakaoTalk,
     Instagram,
     X,
     Special,
     Final
 }
 
-public enum ActionType { P20, P30, H3s, H4s }
+public enum ActionType { P20, P30, H3s, H4s, Length }
 
 public class QTEvent : MonoBehaviour
 {
-    public Image eventBar_Img = null;
-    public Image holdBar_Img = null;
-    public Text clear_Txt = null;
+    public Image EventBar_Img = null;
+    public Image HoldBar_Img = null;
+    public Text Type_Txt = null;
+    public Text Clear_Txt = null;
 
-    EventType eType;
-    public EventType EType { set { eType = value; } }
+    public EventType EType;
+    //public EventType EType { set { eType = value; } }
 
     ActionType aType;
     //public ActionType AType { set { aType = value; } }
@@ -55,13 +56,18 @@ public class QTEvent : MonoBehaviour
         if (pause) return; //일시정지. TODO : 고쳐야 할수도
 
         eventTimer += Time.deltaTime;
-        eventBar_Img.fillAmount = eventTimer / eventTime;
-        holdBar_Img.fillAmount = keyHoldTimer / keyHoldTime;
+        EventBar_Img.fillAmount = eventTimer / eventTime;
+        HoldBar_Img.fillAmount = keyHoldTimer / keyHoldTime;
+        //Debug.Log(keyHoldTimer);
+        //Debug.Log(keyDownCount);
 
         if (eventTime <= eventTimer)
         {
             if (gameObject.activeSelf)
             {
+                if (!isClear) //event 시간 끝났을때 clear 하지 못했으면
+                    GameMgr.Inst.FailCount += 1;
+
                 SetClearText(); //TODO : 없애기
                 gameObject.SetActive(false);
             }
@@ -78,7 +84,7 @@ public class QTEvent : MonoBehaviour
         {
             if (gameObject.activeSelf)
             {
-                clear_Txt.text = "Clear!!!";
+                GameMgr.Inst.txt.text = "Clear!!!";
                 gameObject.SetActive(false);
             }
         }
@@ -86,7 +92,7 @@ public class QTEvent : MonoBehaviour
 
     void InitQTEvnet()
     {
-        switch (eType)
+        switch (EType)
         {
             case EventType.Call:
                 keys = new KeyCode[] { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4 };
@@ -119,6 +125,7 @@ public class QTEvent : MonoBehaviour
     public void SetActionType(ActionType actionType)
     {
         aType = actionType;
+        Type_Txt.text = actionType.ToString() + "\n" + EType.ToString();
 
         switch (aType)
         {
@@ -149,7 +156,7 @@ public class QTEvent : MonoBehaviour
         if (aType == ActionType.H3s || aType == ActionType.H4s)
             return;
 
-        if (eType == EventType.X)
+        if (EType == EventType.X)
         {
             if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
                 keyDownCount++;
@@ -172,7 +179,7 @@ public class QTEvent : MonoBehaviour
         if (aType == ActionType.P20 || aType == ActionType.P30)
             return;
 
-        if (eType == EventType.X)
+        if (EType == EventType.X)
         {
             if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
                 keyHoldTimer += Time.deltaTime;
@@ -190,6 +197,8 @@ public class QTEvent : MonoBehaviour
             }
         }
 
+        if (keyHoldTimer <= 0.0f) keyHoldTimer = 0.0f; //최소값
+
         if (keyHoldTime <= keyHoldTimer)
             isClear = true;
     }
@@ -200,13 +209,28 @@ public class QTEvent : MonoBehaviour
         keyHoldTimer = 0.0f;
         keyDownCount = 0;
         pause = false;
+        isClear = false;
+    }
+
+    void SetTermTimer()
+    {
+        if (GameMgr.Inst.Step == CurrentStep.Step1)
+        {
+            GameMgr.Inst.TermTime = 3.0f;
+        }
+        else if (GameMgr.Inst.Step == CurrentStep.Step2)
+        { }
+        else if (GameMgr.Inst.Step == CurrentStep.Step3)
+        { }
+        else if (GameMgr.Inst.Step == CurrentStep.Step4)
+        { }
     }
 
     void SetClearText()
     {
         if (isClear)
-            clear_Txt.text = "Clear!!!";
+            GameMgr.Inst.txt.text = "Clear!!!";
         else
-            clear_Txt.text = "Fail!!!";
+            GameMgr.Inst.txt.text = "Fail!!!";
     }
 }
