@@ -14,7 +14,7 @@ public class GameMgr : MonoBehaviour
     public const int step4 = 18;
     public const int step5 = 39;
 
-    public Text EventNum_txt = null;
+    //public Text EventNum_txt = null;
     //public Text Clear_txt = null;
 
     public QTEvent[] NormalQTEvents = null;
@@ -55,18 +55,26 @@ public class GameMgr : MonoBehaviour
     int termCount = 0;
 
     [HideInInspector] public bool start = false;
-
     public Transform canvas = null;
-
+    public AudioClip InGameBgmClip = null;
+    AudioSource audioSrc = null;
     public static GameMgr Inst = null;
 
     void Awake() { Inst = this; }
 
     void Start()
     {
+        if (audioSrc == null)
+            audioSrc = GetComponent<AudioSource>();
+
+        audioSrc.clip = InGameBgmClip;
+        audioSrc.volume = 1.0f;
+        audioSrc.loop = true;
+        audioSrc.Play();
+
         termCount = 0;
-        //EventNum_txt.text = "Step1";
         termTime = Random.Range(2.0f, 3.0f); //시작시 랜덤 텀
+        //EventNum_txt.text = "Step1";
     }
 
     void Update()
@@ -132,7 +140,7 @@ public class GameMgr : MonoBehaviour
 
         StepEventCount();
         termCount++;
-        EventNum_txt.text = eventCount + " / " + termCount;
+        //EventNum_txt.text = eventCount + " / " + termCount;
 
         //NormalQTEvents[3].gameObject.SetActive(true);
         //NormalQTEvents[3].SetEventInfo(ActionType.H4s);
