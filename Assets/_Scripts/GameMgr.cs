@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public enum CurrentStep { Step1, Step2, Step3, Step4 }
 
@@ -66,7 +67,7 @@ public class GameMgr : MonoBehaviour
     {
         if (MaxFailCount < failCount || MaxEventCount < eventCount) // GameOver
         {
-            EventNum_txt.text = "Game Over";
+            SceneManager.LoadScene("GameOver");
             return;
         }
 
@@ -75,12 +76,12 @@ public class GameMgr : MonoBehaviour
         //if (Input.GetKeyDown(KeyCode.P))
         //    SpawnNormalEvent();
 
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            start = true;
-            Debug.Log("Start");
-        }
-        if (!start) return; //이걸 써야 인덱스 에러 안쌓이고 안난다. //nono. disable 때문인데 스크립트 끄고 시작하면됨.
+        //if (Input.GetKeyDown(KeyCode.Z))
+        //{
+        //    start = true;
+        //    Debug.Log("Start");
+        //}
+        //if (!start) return; //이걸 써야 인덱스 에러 안쌓이고 안난다. //nono. disable 때문인데 스크립트 끄고 시작하면됨.
 
         if (IsMainThread())
         {
