@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public enum EventType
@@ -54,17 +55,14 @@ public class QTEvent : MonoBehaviour
 
     KeyCode[] keys;
 
-    bool pause = false;
+    //bool pause = false;
     bool isClear = false;
 
-    void Start()
-    {
-        InitQTEvnet();
-    }
+    void Start() { InitQTEvnet(); }
 
     void Update()
     {
-        if (pause) return; //일시정지. TODO : 고쳐야 할수도
+        //if (pause) return; //일시정지. TODO : 고쳐야 할수도
 
         eventTimer += Time.deltaTime;
         EventBar_Img.fillAmount = eventTimer / eventTime;
@@ -81,12 +79,18 @@ public class QTEvent : MonoBehaviour
 
         if (eventTime <= eventTimer)
         {
+            if (GameMgr.Inst.Step == CurrentStep.Step5)
+            {
+                SceneManager.LoadScene("GameOver");
+                return;
+            }
+
             if (gameObject.activeSelf)
             {
                 if (!isClear) //event 시간 끝났을때 clear 하지 못했으면
                     GameMgr.Inst.FailCount += 1;
 
-                SetClearText(); //TODO : 지워야함. 
+                //SetClearText(); //TODO : 지워야함. 
                 enabled = false;
             }
 
@@ -107,8 +111,16 @@ public class QTEvent : MonoBehaviour
         {
             if (gameObject.activeSelf)
             {
-                GameMgr.Inst.Clear_txt.text = "Clear!!!"; //TODO : 지워야함.
-                enabled = false;
+                if (GameMgr.Inst.Step == CurrentStep.Step5)
+                {
+                    SceneManager.LoadScene("GameOver");
+                    return;
+                }
+                else
+                {
+                    //GameMgr.Inst.Clear_txt.text = "Clear!!!"; //TODO : 지워야함.
+                    enabled = false;
+                }
             }
         }
         //클리어시
@@ -124,7 +136,7 @@ public class QTEvent : MonoBehaviour
         {
             delayTimer = 0.0f;
             delayTime = -1.0f;
-            GameMgr.Inst.SpawnNormalEvent();
+            GameMgr.Inst.SpawnEvent();
         }
     }
 
@@ -155,7 +167,6 @@ public class QTEvent : MonoBehaviour
 
             case EventType.Final:
                 keys = new KeyCode[] { KeyCode.Q, KeyCode.W, KeyCode.E, KeyCode.R, KeyCode.Return };
-                targetCount = 100;
                 break;
         }
     }
@@ -169,24 +180,34 @@ public class QTEvent : MonoBehaviour
         {
             case ActionType.P20:
                 eventTime = 3.0f;
+                //eventTime = 0.1f;
                 targetCount = 15;
                 break;
 
             case ActionType.P30:
                 eventTime = 4.0f;
+                //eventTime = 0.1f;
                 targetCount = 20;
                 break;
 
             case ActionType.H3s:
                 eventTime = 3.0f;
+                //eventTime = 0.1f;
                 keyHoldTime = 1.5f;
                 break;
 
             case ActionType.H4s:
                 eventTime = 4.0f;
+                //eventTime = 0.1f;
                 keyHoldTime = 2.0f;
                 break;
         }
+    }
+
+    public void SetFinalInfo()
+    {
+        eventTime = 5.0f;
+        targetCount = 100;
     }
 
     void KeyDown(KeyCode[] keyArr)
@@ -262,11 +283,11 @@ public class QTEvent : MonoBehaviour
             GameMgr.Inst.termTable[(int)GameMgr.Inst.Step][termCount];
     }
 
-    void SetClearText()
-    {
-        if (isClear)
-            GameMgr.Inst.Clear_txt.text = "Clear!!!";
-        else
-            GameMgr.Inst.Clear_txt.text = "Fail!!!";
-    }
+    //void SetClearText()
+    //{
+    //    if (isClear)
+    //        GameMgr.Inst.Clear_txt.text = "Clear!!!";
+    //    else
+    //        GameMgr.Inst.Clear_txt.text = "Fail!!!";
+    //}
 }

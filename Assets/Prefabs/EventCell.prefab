@@ -142,7 +142,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7a6a3a2023c42d3489642cccdfd44dbe, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ef2c88743f54ecb49ae990364a3b27b6, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -370,11 +370,11 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 55
+    m_FontSize: 120
     m_FontStyle: 1
     m_BestFit: 0
     m_MinSize: 0
-    m_MaxSize: 66
+    m_MaxSize: 120
     m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
@@ -436,7 +436,6 @@ MonoBehaviour:
   EventBar_Img: {fileID: 3506715971737517148}
   HoldBar_Img: {fileID: 5304085818443868027}
   Type_Txt: {fileID: 6243568709638538479}
-  Clear_Txt: {fileID: 0}
   EType: 0
 --- !u!1 &6857390871294237804
 GameObject:
