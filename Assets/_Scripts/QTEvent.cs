@@ -58,6 +58,11 @@ public class QTEvent : MonoBehaviour
     //bool pause = false;
     bool isClear = false;
 
+    void OnEnable()
+    {
+        SoundMgr.Inst.PlaySfxSound(SfxType.QTEStart);
+    }
+
     void Start() { InitQTEvnet(); }
 
     void Update()
@@ -82,9 +87,11 @@ public class QTEvent : MonoBehaviour
             if (gameObject.activeSelf)
             {
                 if (!isClear) //event 시간 끝났을때 clear 하지 못했으면
+                {
                     GameMgr.Inst.FailCount += 1;
+                    SoundMgr.Inst.PlaySfxSound(SfxType.QTEFail);
+                }
 
-                //SetClearText(); //TODO : 지워야함. 
                 enabled = false;
             }
 
@@ -105,7 +112,7 @@ public class QTEvent : MonoBehaviour
         {
             if (gameObject.activeSelf)
             {
-                //GameMgr.Inst.Clear_txt.text = "Clear!!!"; //TODO : 지워야함.
+                SoundMgr.Inst.PlaySfxSound(SfxType.QTESuccess);
                 enabled = false;
             }
         }

@@ -8,14 +8,24 @@ public enum CurrentStep { Step1, Step2, Step3, Step4, Step5 }
 
 public class GameMgr : MonoBehaviour
 {
+    //[HideInInspector]
+    //public float[][] termTable = new float[][] {
+    //    new float[]{ 0.1f, 0.1f },
+    //    new float[]{ 0.1f, 0.1f, 0.1f, 0.1f, 0.1f },
+    //    new float[]{ 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f },
+    //    new float[]{ 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 
+    //        0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f }
+    //};
+
     [HideInInspector] public CurrentStep Step = CurrentStep.Step1;
     public const int step2 = 2;
     public const int step3 = 7;
     public const int step4 = 18;
     public const int step5 = 39;
 
-    //public Text EventNum_txt = null;
-    //public Text Clear_txt = null;
+    public GameObject End_Pnl = null;
+    public GameObject ClearObj = null;
+    public GameObject FailObj = null;
 
     public QTEvent[] NormalQTEvents = null;
     //public QTEvent[] SpecialQTEvents = null;
@@ -36,14 +46,6 @@ public class GameMgr : MonoBehaviour
     float termTimer = 0.0f;
     float termTime = 0.0f;
     public float TermTime { set { termTime = value; } }
-    //[HideInInspector]
-    //public float[][] termTable = new float[][] {
-    //    new float[]{ 0.1f, 0.1f },
-    //    new float[]{ 0.1f, 0.1f, 0.1f, 0.1f, 0.1f },
-    //    new float[]{ 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f },
-    //    new float[]{ 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 
-    //        0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f }
-    //};
     [HideInInspector]
     public float[][] termTable = new float[][] {
         new float[]{ 3.0f, 3.0f },
@@ -55,23 +57,14 @@ public class GameMgr : MonoBehaviour
     int termCount = 0;
 
     [HideInInspector] public bool start = false;
+    bool isEnd = false;
     public Transform canvas = null;
-    public AudioClip InGameBgmClip = null;
-    AudioSource audioSrc = null;
     public static GameMgr Inst = null;
 
     void Awake() { Inst = this; }
 
     void Start()
     {
-        if (audioSrc == null)
-            audioSrc = GetComponent<AudioSource>();
-
-        audioSrc.clip = InGameBgmClip;
-        audioSrc.volume = 1.0f;
-        audioSrc.loop = true;
-        audioSrc.Play();
-
         termCount = 0;
         termTime = Random.Range(2.0f, 3.0f); //시작시 랜덤 텀
         //EventNum_txt.text = "Step1";
@@ -79,11 +72,28 @@ public class GameMgr : MonoBehaviour
 
     void Update()
     {
-        //if (MaxFailCount < failCount) // GameOver
-        //{
-        //    SceneManager.LoadScene("GameOver");
-        //    return;
-        //}
+        if (isEnd) return;
+
+        if (MaxFailCount < failCount) // GameOver
+        {
+            Time.timeScale = 0.0f;
+            SoundMgr.Inst.TurnOffBgm();
+            SoundMgr.Inst.PlaySfxSound(SfxType.StageFail);
+            isEnd = true;
+            SetClearImage(false);
+            //SceneManager.LoadScene("GameOver");
+            return;
+        }
+
+        if (MaxEventCount < eventCount)
+        {
+            Time.timeScale = 0.0f;
+            SoundMgr.Inst.TurnOffBgm();
+            SoundMgr.Inst.PlaySfxSound(SfxType.StageClear);
+            isEnd = true;
+            SetClearImage(true);
+            return;
+        }
 
         //EventNum_txt.text = eventCount.ToString(); //TODO : 지워야함.
 
@@ -115,6 +125,13 @@ public class GameMgr : MonoBehaviour
                 termTimer = 0.0f;
             }
         }
+    }
+
+    void SetClearImage(bool onOff)
+    {
+        End_Pnl.gameObject.SetActive(true);
+        ClearObj.gameObject.SetActive(onOff);
+        FailObj.gameObject.SetActive(!onOff);
     }
 
     bool IsMainThread()
@@ -195,25 +212,21 @@ public class GameMgr : MonoBehaviour
 
         if (eventCount == step2 + 1)
         {
-            //EventNum_txt.text = CurrentStep.Step2.ToString();
             Step = CurrentStep.Step2;
             termCount = 0;
         }
         else if (eventCount == step3 + 1)
         {
-            //EventNum_txt.text = CurrentStep.Step3.ToString();
             Step = CurrentStep.Step3;
             termCount = 0;
         }
         else if (eventCount == step4 + 1)
         {
-            //EventNum_txt.text = CurrentStep.Step4.ToString();
             Step = CurrentStep.Step4;
             termCount = 0;
         }
         else if (eventCount == step5 + 1)
         {
-            //EventNum_txt.text = CurrentStep.Step4.ToString();
             Step = CurrentStep.Step5;
             termCount = 0;
         }
