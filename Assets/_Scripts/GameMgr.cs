@@ -35,20 +35,32 @@ public class GameMgr : MonoBehaviour
     float termTimer = 0.0f;
     float termTime = 0.0f;
     public float TermTime { set { termTime = value; } }
+    //[HideInInspector]
+    //public float[][] termTable = new float[][] {
+    //    new float[]{ 3.0f, 3.0f },
+    //    new float[]{ 3.0f, 0.5f, 1.5f, 0.0f, 3.0f },
+    //    new float[]{ 0.0f, 3.0f, 1.0f, 0.5f, 1.5f, 0.0f, 0.5f, 1.5f, 0.0f, 0.0f, 4.0f },
+    //    new float[]{ 0.0f, 0.5f, 1.5f, 0.5f, 1.5f, 0.5f, 0.5f, 0.0f, 1.5f, 
+    //        0.5f, 0.5f, 0.5f, 0.5f, 1.5f, 1, 0.5f, 0.5f, 0.0f, 1.5f, 0.0f, 5.0f }
+    //};
     [HideInInspector]
     public float[][] termTable = new float[][] {
         new float[]{ 3.0f, 3.0f },
-        new float[]{ 3.0f, 0.5f, 1.5f, 0.0f, 3.0f },
-        new float[]{ 0.0f, 3.0f, 1.0f, 0.5f, 1.5f, 0.0f, 0.5f, 1.5f, 0.0f, 0.0f, 4.0f },
-        new float[]{ 0.0f, 0.5f, 1.5f, 0.5f, 1.5f, 0.5f, 0.5f, 0.0f, 1.5f, 
-            0.5f, 0.5f, 0.5f, 0.5f, 1.5f, 1, 0.5f, 0.5f, 0.0f, 1.5f, 0.0f, 5.0f }
+        new float[]{ 3.0f, 1.5f, 1.5f, 3.0f, 3.0f },
+        new float[]{ 3.0f, 3.0f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 4.0f, 4.0f, 4.0f },
+        new float[]{ 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 
+            1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 1.5f, 5.0f, 5.0f, 5.0f, 5.0f }
     };
     int termCount = 0;
-    public int TermCount
-    {
-        get { return termCount; }
-        set { termCount = value; }
-    }
+    //public int TermCount
+    //{
+    //    get { return termCount; }
+    //    set { termCount = value; }
+    //}
+
+    //float delayTimer = 0.0f;
+    //float delayTime = 0.0f;
+    //bool isDelay = true;
 
     [HideInInspector] public bool start = false;
 
@@ -65,7 +77,8 @@ public class GameMgr : MonoBehaviour
 
     void Update()
     {
-        if (MaxFailCount < failCount || MaxEventCount < eventCount) // GameOver
+        //if (MaxFailCount < failCount || MaxEventCount < eventCount) // GameOver
+        if (MaxEventCount < eventCount) // GameOver
         {
             SceneManager.LoadScene("GameOver");
             return;
@@ -90,10 +103,22 @@ public class GameMgr : MonoBehaviour
             if (termTime <= termTimer)
             {
                 SpawnNormalEvent();
-
                 termTimer = 0.0f;
             }
         }
+
+        /*
+        if (isDelay)
+        {
+            delayTimer += Time.deltaTime;
+            if (delayTime <= delayTimer)
+            {
+                SpawnNormalEvent();
+                delayTimer = 0.0f;
+                isDelay = false;
+            }
+        }
+        */
     }
 
     bool IsMainThread()
@@ -107,21 +132,58 @@ public class GameMgr : MonoBehaviour
         return true;
     }
 
-    //void SpawnNormalEvent(int qtIdx, int acIdx)
-    void SpawnNormalEvent()
+    public void SpawnNormalEvent()
     {
-        int qtIdx = Random.Range(0, NormalQTEvents.Length);
+        //int qtIdx = Random.Range(0, NormalQTEvents.Length);
+        int qtIdx = GetInactiveNorQTEventIdx();
         int acIdx = Random.Range(0, (int)ActionType.Length);
-        //NormalQTEvents[qtIdx].gameObject.SetActive(true);
         NormalQTEvents[qtIdx].enabled = true;
-
         NormalQTEvents[qtIdx].SetEventInfo((ActionType)acIdx);
-        StepEventCount();
 
-        //NormalQTEvents[qtIdx].SetEventInfo((ActionType)acIdx, eventCount);
+        NormalQTEvents[qtIdx].TermCount = termCount;
+
+        NormalQTEvents[qtIdx].DelayTime = GetDelayTimer();
+        StepEventCount();
+        termCount++;
+
+        //Debug.Log(NormalQTEvents[qtIdx].DelayTime);
+
         //NormalQTEvents[3].gameObject.SetActive(true);
         //NormalQTEvents[3].SetEventInfo(ActionType.H4s);
-        //NormalQTEvents[0].SetActionType(ActionType.P20);
+    }
+
+    public float GetDelayTimer()
+    {
+        float delayTime = -1.0f;
+
+        if (Step == CurrentStep.Step2)
+        {
+            if (termCount == 1)
+                return delayTime = 0.5f;
+            else if (termCount == 3)
+                return delayTime = 0.0f;
+        }
+        else if (Step == CurrentStep.Step3)
+        {
+            if (termCount == 0 || termCount == 5 || termCount == 8 || termCount == 9)
+                return delayTime = 0.0f;
+            else if (termCount == 3 || termCount == 6)
+                return delayTime = 0.5f;
+            else if (termCount == 2)
+                return delayTime = 1.0f;
+        }
+        else if (Step == CurrentStep.Step4)
+        {
+            if (termCount == 0 || termCount == 7 || termCount == 18 || termCount == 19 || termCount == 20)
+                return delayTime = 0.0f;
+            else if (termCount == 1 || termCount == 3 || termCount == 5 || termCount == 6 ||
+                termCount == 9 || termCount == 10 || termCount == 11 || termCount == 14 || termCount == 15)
+                return delayTime = 0.5f;
+            else if (termCount == 13)
+                return delayTime = 1.0f;
+        }
+
+        return delayTime;
     }
 
     void StepEventCount()
@@ -146,6 +208,23 @@ public class GameMgr : MonoBehaviour
             Step = CurrentStep.Step4;
             termCount = 0;
         }
+    }
+
+    int GetInactiveNorQTEventIdx()
+    {
+        List<int> tmp = new List<int>();
+
+        for (int i = 0; i < NormalQTEvents.Length; i++)
+        {
+            if (!NormalQTEvents[i].enabled)
+                tmp.Add(i);
+        }
+
+        if (tmp.Count <= 0)
+            Debug.Log("tmp count is " + tmp.Count);
+
+        int idx = Random.Range(0, tmp.Count);
+        return tmp[idx];
     }
 
     List<int> GetDiffInt(int n, int r)
