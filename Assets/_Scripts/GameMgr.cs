@@ -8,6 +8,9 @@ public enum CurrentStep { Step1, Step2, Step3, Step4 }
 public class GameMgr : MonoBehaviour
 {
     [HideInInspector] public CurrentStep Step = CurrentStep.Step1;
+    public const int step2 = 2;
+    public const int step3 = 7;
+    public const int step4 = 18;
 
     public Text txt = null;
 
@@ -16,6 +19,7 @@ public class GameMgr : MonoBehaviour
     public QTEvent FinalQTEvents = null;
 
     int eventCount = 0;
+    public int EventCount { get { return eventCount; } }
     int failCount = 0;
     public int FailCount
     {
@@ -27,6 +31,20 @@ public class GameMgr : MonoBehaviour
     float termTime = 0.0f;
     public float TermTime { set { termTime = value; } }
     float termTimer = 0.0f;
+    [HideInInspector]
+    public float[][] termTable = new float[][] {
+        new float[]{ 3.0f, 3.0f },
+        new float[]{ 3.0f, 0.5f, 1.5f, 3.0f },
+        new float[]{ 3.0f, 1.0f, 0.5f, 1.5f, 0.5f, 1.5f, 4.0f },
+        new float[]{ 0.5f, 1.5f, 0.5f, 1.5f, 0.5f, 0.5f, 1.5f,
+            0.5f, 0.5f, 0.5f, 0.5f, 1.5f, 1, 0.5f, 0.5f, 1.5f, 5.0f }
+    };
+    int termCount = 0;
+    public int TermCount
+    {
+        get { return termCount; }
+        set { termCount = value; }
+    }
 
     public static GameMgr Inst = null;
 
@@ -34,6 +52,7 @@ public class GameMgr : MonoBehaviour
 
     void Start()
     {
+        txt.text = "Step1";
         termTime = Random.Range(2.0f, 3.0f); //시작시 랜덤 텀
     }
 
@@ -82,7 +101,12 @@ public class GameMgr : MonoBehaviour
     void SpawnNormalEvent(int qtIdx, int acIdx)
     {
         NormalQTEvents[qtIdx].gameObject.SetActive(true);
-        NormalQTEvents[qtIdx].SetActionType((ActionType)acIdx);
+        NormalQTEvents[qtIdx].SetEventInfo((ActionType)acIdx);
+        //NormalQTEvents[qtIdx].SetEventInfo((ActionType)acIdx, eventCount);
+
+        //NormalQTEvents[0].gameObject.SetActive(true);
+        //NormalQTEvents[0].SetActionType(ActionType.H4s);
+        //NormalQTEvents[0].SetActionType(ActionType.P20);
         StepEventCount();
     }
 
@@ -90,14 +114,25 @@ public class GameMgr : MonoBehaviour
     {
         eventCount++;
 
-        if (2 <= eventCount)
+        if (step2 == eventCount)
+        {
+            txt.text = CurrentStep.Step2.ToString();
             Step = CurrentStep.Step2;
-        else if (7 <= eventCount)
+            termCount = 0;
+        }
+        else if (step3 == eventCount)
+        {
+            txt.text = CurrentStep.Step3.ToString();
             Step = CurrentStep.Step3;
-        else if (18 <= eventCount)
+            termCount = 0;
+        }
+        else if (step4 == eventCount)
+        {
+            txt.text = CurrentStep.Step4.ToString();
             Step = CurrentStep.Step4;
+            termCount = 0;
+        }
     }
-
 
     List<int> GetDiffInt(int n, int r)
     {

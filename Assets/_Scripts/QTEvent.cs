@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,6 +28,8 @@ public class QTEvent : MonoBehaviour
 
     ActionType aType;
     //public ActionType AType { set { aType = value; } }
+
+    int eventNum;
 
     float eventTime = 0.0f;
     float eventTimer = 0.0f;
@@ -57,7 +60,14 @@ public class QTEvent : MonoBehaviour
 
         eventTimer += Time.deltaTime;
         EventBar_Img.fillAmount = eventTimer / eventTime;
-        HoldBar_Img.fillAmount = keyHoldTimer / keyHoldTime;
+
+        if (aType == ActionType.P20 || aType == ActionType.P30)
+        {
+            if (targetCount != 0)
+                HoldBar_Img.fillAmount = (float)keyDownCount / targetCount;
+        }
+        else if (aType == ActionType.H3s || aType == ActionType.H4s)
+            HoldBar_Img.fillAmount = keyHoldTimer / keyHoldTime;
         //Debug.Log(keyHoldTimer);
         //Debug.Log(keyDownCount);
 
@@ -68,7 +78,7 @@ public class QTEvent : MonoBehaviour
                 if (!isClear) //event 시간 끝났을때 clear 하지 못했으면
                     GameMgr.Inst.FailCount += 1;
 
-                SetClearText(); //TODO : 없애기
+                //SetClearText(); //TODO : 지워야함. 
                 gameObject.SetActive(false);
             }
 
@@ -84,7 +94,7 @@ public class QTEvent : MonoBehaviour
         {
             if (gameObject.activeSelf)
             {
-                GameMgr.Inst.txt.text = "Clear!!!";
+                //GameMgr.Inst.txt.text = "Clear!!!"; //TODO : 지워야함.
                 gameObject.SetActive(false);
             }
         }
@@ -122,9 +132,11 @@ public class QTEvent : MonoBehaviour
         }
     }
 
-    public void SetActionType(ActionType actionType)
+    //public void SetEventInfo(ActionType actionType, int eCnt)
+    public void SetEventInfo(ActionType actionType)
     {
         aType = actionType;
+        //eventNum = eCnt;
         Type_Txt.text = actionType.ToString() + "\n" + EType.ToString();
 
         switch (aType)
@@ -166,7 +178,10 @@ public class QTEvent : MonoBehaviour
             for (int i = 0; i < keyArr.Length; i++)
             {
                 if (Input.GetKeyDown(keyArr[i]))
+                {
                     keyDownCount++;
+                    break;
+                }
             }
         }
 
@@ -188,16 +203,11 @@ public class QTEvent : MonoBehaviour
         }
         else
         {
-            for (int i = 0; i < keyArr.Length; i++)
-            {
-                if (Input.GetKey(keyArr[i]))
-                    keyHoldTimer += Time.deltaTime;
-                else
-                    keyHoldTimer -= Time.deltaTime;
-            }
+            if (keyArr.Any(key => Input.GetKey(key)))
+                keyHoldTimer += Time.deltaTime;
+            else
+                keyHoldTimer = keyHoldTimer <= 0 ? 0 : keyHoldTimer - Time.deltaTime;
         }
-
-        if (keyHoldTimer <= 0.0f) keyHoldTimer = 0.0f; //최소값
 
         if (keyHoldTime <= keyHoldTimer)
             isClear = true;
@@ -210,7 +220,35 @@ public class QTEvent : MonoBehaviour
         keyDownCount = 0;
         pause = false;
         isClear = false;
+        //ResetTermCount();
+
+        //
+        EventBar_Img.fillAmount = 0.0f;
+        HoldBar_Img.fillAmount = 0.0f;
+
+        SetTermTimer();
     }
+
+    /*
+    void ResetTermCount()
+    {
+        if (GameMgr.Inst.Step == CurrentStep.Step1)
+        {
+            if (GameMgr.step2 == eventNum)
+                GameMgr.Inst.TermCount = 0;
+        }
+        else if (GameMgr.Inst.Step == CurrentStep.Step2)
+        { 
+            if (GameMgr.step3 == eventNum)
+                GameMgr.Inst.TermCount = 0;
+        }
+        else if (GameMgr.Inst.Step == CurrentStep.Step3)
+        { 
+            if (GameMgr.step4 == eventNum)
+                GameMgr.Inst.TermCount = 0;
+        }
+    }
+    */
 
     void SetTermTimer()
     {
@@ -219,9 +257,15 @@ public class QTEvent : MonoBehaviour
             GameMgr.Inst.TermTime = 3.0f;
         }
         else if (GameMgr.Inst.Step == CurrentStep.Step2)
-        { }
+        {
+            GameMgr.Inst.TermTime =
+                GameMgr.Inst.termTable[(int)CurrentStep.Step2][GameMgr.Inst.TermCount];
+
+        }
         else if (GameMgr.Inst.Step == CurrentStep.Step3)
-        { }
+        { 
+
+        }
         else if (GameMgr.Inst.Step == CurrentStep.Step4)
         { }
     }
