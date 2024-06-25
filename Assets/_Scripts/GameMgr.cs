@@ -12,14 +12,17 @@ public class GameMgr : MonoBehaviour
     public const int step3 = 7;
     public const int step4 = 18;
 
-    public Text txt = null;
+    public Text EventNum_txt = null;
+    public Text Clear_txt = null;
 
     public QTEvent[] NormalQTEvents = null;
     public QTEvent[] SpecialQTEvents = null;
     public QTEvent FinalQTEvents = null;
 
+    const int MaxEventCount = 38;
     int eventCount = 0;
     public int EventCount { get { return eventCount; } }
+
     int failCount = 0;
     public int FailCount
     {
@@ -28,9 +31,9 @@ public class GameMgr : MonoBehaviour
     }
     const int MaxFailCount = 3;
 
+    float termTimer = 0.0f;
     float termTime = 0.0f;
     public float TermTime { set { termTime = value; } }
-    float termTimer = 0.0f;
     [HideInInspector]
     public float[][] termTable = new float[][] {
         new float[]{ 3.0f, 3.0f },
@@ -46,7 +49,7 @@ public class GameMgr : MonoBehaviour
         set { termCount = value; }
     }
 
-    bool start = false;
+    [HideInInspector] public bool start = false;
 
     public static GameMgr Inst = null;
 
@@ -55,12 +58,20 @@ public class GameMgr : MonoBehaviour
     void Start()
     {
         termCount = 0;
-        txt.text = "Step1";
+        EventNum_txt.text = "Step1";
         termTime = Random.Range(2.0f, 3.0f); //시작시 랜덤 텀
     }
 
     void Update()
     {
+        if (MaxFailCount < failCount || MaxEventCount < eventCount) // GameOver
+        {
+            EventNum_txt.text = "Game Over";
+            return;
+        }
+
+        EventNum_txt.text = eventCount.ToString();
+
         //if (Input.GetKeyDown(KeyCode.P))
         //    SpawnNormalEvent();
 
@@ -69,8 +80,7 @@ public class GameMgr : MonoBehaviour
             start = true;
             Debug.Log("Start");
         }
-
-        if (!start) return;
+        if (!start) return; //이걸 써야 인덱스 에러 안쌓이고 안난다. //nono. disable 때문인데 스크립트 끄고 시작하면됨.
 
         if (IsMainThread())
         {
@@ -78,28 +88,18 @@ public class GameMgr : MonoBehaviour
 
             if (termTime <= termTimer)
             {
-                //int qtIdx = Random.Range(0, NormalQTEvents.Length);
-                //int acIdx = Random.Range(0, (int)ActionType.Length);
-                //SpawnNormalEvent(qtIdx, acIdx);
                 SpawnNormalEvent();
 
                 termTimer = 0.0f;
-                //termTime = 0.0f;
             }
         }
-
-        //if (MaxFailCount < failCount) // GameOver
-        //{
-        //    Debug.Log("GameOver");
-        //    return;
-        //}
     }
 
     bool IsMainThread()
     {
         for (int i = 0; i < NormalQTEvents.Length; i++)
         {
-            if (NormalQTEvents[i].gameObject.activeSelf)
+            if (NormalQTEvents[i].enabled)
                 return false;
         }
 
@@ -109,36 +109,19 @@ public class GameMgr : MonoBehaviour
     //void SpawnNormalEvent(int qtIdx, int acIdx)
     void SpawnNormalEvent()
     {
-        //int repeat = GetRepeatNum();
-        //if (repeat < 0) return;
-
-        //for (int i = 0; i < repeat; i++)
-        //{
         int qtIdx = Random.Range(0, NormalQTEvents.Length);
         int acIdx = Random.Range(0, (int)ActionType.Length);
-        NormalQTEvents[qtIdx].gameObject.SetActive(true);
+        //NormalQTEvents[qtIdx].gameObject.SetActive(true);
+        NormalQTEvents[qtIdx].enabled = true;
+
         NormalQTEvents[qtIdx].SetEventInfo((ActionType)acIdx);
         StepEventCount();
-        //}
-        //NormalQTEvents[qtIdx].SetEventInfo((ActionType)acIdx, eventCount);
 
+        //NormalQTEvents[qtIdx].SetEventInfo((ActionType)acIdx, eventCount);
         //NormalQTEvents[3].gameObject.SetActive(true);
         //NormalQTEvents[3].SetEventInfo(ActionType.H4s);
         //NormalQTEvents[0].SetActionType(ActionType.P20);
     }
-
-    /*
-    int GetRepeatNum()
-    {
-        if (eventCount == 4 || eventCount == 6 || eventCount == 11 || eventCount == 17
-            || eventCount == 24 || eventCount == 33 || eventCount == 35)
-            return 2;
-        else if (eventCount == 14)
-            return 3;
-
-        return -1;
-    }
-    */
 
     void StepEventCount()
     {
@@ -146,19 +129,19 @@ public class GameMgr : MonoBehaviour
 
         if (eventCount == step2 + 1)
         {
-            txt.text = CurrentStep.Step2.ToString();
+            EventNum_txt.text = CurrentStep.Step2.ToString();
             Step = CurrentStep.Step2;
             termCount = 0;
         }
         else if (eventCount == step3 + 1)
         {
-            txt.text = CurrentStep.Step3.ToString();
+            EventNum_txt.text = CurrentStep.Step3.ToString();
             Step = CurrentStep.Step3;
             termCount = 0;
         }
         else if (eventCount == step4 + 1)
         {
-            txt.text = CurrentStep.Step4.ToString();
+            EventNum_txt.text = CurrentStep.Step4.ToString();
             Step = CurrentStep.Step4;
             termCount = 0;
         }
@@ -183,4 +166,17 @@ public class GameMgr : MonoBehaviour
 
         return result;
     }
+
+    /*
+    int GetRepeatNum()
+    {
+        if (eventCount == 4 || eventCount == 6 || eventCount == 11 || eventCount == 17
+            || eventCount == 24 || eventCount == 33 || eventCount == 35)
+            return 2;
+        else if (eventCount == 14)
+            return 3;
+
+        return -1;
+    }
+    */
 }

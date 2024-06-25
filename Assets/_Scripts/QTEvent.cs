@@ -21,7 +21,6 @@ public class QTEvent : MonoBehaviour
     public Image EventBar_Img = null;
     public Image HoldBar_Img = null;
     public Text Type_Txt = null;
-    public Text Clear_Txt = null;
 
     public EventType EType;
     //public EventType EType { set { eType = value; } }
@@ -66,8 +65,6 @@ public class QTEvent : MonoBehaviour
         }
         else if (aType == ActionType.H3s || aType == ActionType.H4s)
             HoldBar_Img.fillAmount = keyHoldTimer / keyHoldTime;
-        //Debug.Log(keyHoldTimer);
-        //Debug.Log(keyDownCount);
 
         if (eventTime <= eventTimer)
         {
@@ -76,8 +73,8 @@ public class QTEvent : MonoBehaviour
                 if (!isClear) //event 시간 끝났을때 clear 하지 못했으면
                     GameMgr.Inst.FailCount += 1;
 
-                //SetClearText(); //TODO : 지워야함. 
-                gameObject.SetActive(false);
+                SetClearText(); //TODO : 지워야함. 
+                enabled = false;
             }
 
             return;
@@ -92,8 +89,8 @@ public class QTEvent : MonoBehaviour
         {
             if (gameObject.activeSelf)
             {
-                //GameMgr.Inst.txt.text = "Clear!!!"; //TODO : 지워야함.
-                gameObject.SetActive(false);
+                GameMgr.Inst.Clear_txt.text = "Clear!!!"; //TODO : 지워야함.
+                enabled = false;
             }
         }
     }
@@ -130,11 +127,10 @@ public class QTEvent : MonoBehaviour
         }
     }
 
-    //public void SetEventInfo(ActionType actionType, int eCnt)
     public void SetEventInfo(ActionType actionType)
     {
         aType = actionType;
-        Type_Txt.text = actionType.ToString() + "\n" + EType.ToString();
+        Type_Txt.text = actionType.ToString();
 
         switch (aType)
         {
@@ -217,6 +213,7 @@ public class QTEvent : MonoBehaviour
         keyDownCount = 0;
         pause = false;
         isClear = false;
+        Type_Txt.text = string.Empty;
         //ResetTermCount();
 
         //
@@ -224,6 +221,24 @@ public class QTEvent : MonoBehaviour
         HoldBar_Img.fillAmount = 0.0f;
 
         SetTermTimer();
+    }
+
+    void SetTermTimer()
+    {
+        if (!GameMgr.Inst.start) return;
+
+        GameMgr.Inst.TermTime =
+            GameMgr.Inst.termTable[(int)GameMgr.Inst.Step][GameMgr.Inst.TermCount];
+
+        GameMgr.Inst.TermCount++;
+    }
+
+    void SetClearText()
+    {
+        if (isClear)
+            GameMgr.Inst.Clear_txt.text = "Clear!!!";
+        else
+            GameMgr.Inst.Clear_txt.text = "Fail!!!";
     }
 
     /*
@@ -246,45 +261,4 @@ public class QTEvent : MonoBehaviour
         }
     }
     */
-
-    void SetTermTimer()
-    {
-        Debug.Log((int)GameMgr.Inst.Step);
-        Debug.Log(GameMgr.Inst.TermCount);
-        GameMgr.Inst.TermTime =
-            GameMgr.Inst.termTable[(int)GameMgr.Inst.Step][GameMgr.Inst.TermCount];
-
-        GameMgr.Inst.TermCount++;
-
-        /*
-        if (GameMgr.Inst.Step == CurrentStep.Step1)
-        {
-            GameMgr.Inst.TermTime = 3.0f;
-        }
-        else if (GameMgr.Inst.Step == CurrentStep.Step2)
-        {
-            GameMgr.Inst.TermTime =
-                GameMgr.Inst.termTable[(int)CurrentStep.Step2][GameMgr.Inst.TermCount];
-        }
-        else if (GameMgr.Inst.Step == CurrentStep.Step3)
-        {
-            GameMgr.Inst.TermTime =
-                GameMgr.Inst.termTable[(int)CurrentStep.Step3][GameMgr.Inst.TermCount];
-        }
-        else if (GameMgr.Inst.Step == CurrentStep.Step4)
-        {
-            GameMgr.Inst.TermTime =
-                GameMgr.Inst.termTable[(int)CurrentStep.Step4][GameMgr.Inst.TermCount];
-        }
-        */
-
-    }
-
-    void SetClearText()
-    {
-        if (isClear)
-            GameMgr.Inst.txt.text = "Clear!!!";
-        else
-            GameMgr.Inst.txt.text = "Fail!!!";
-    }
 }
