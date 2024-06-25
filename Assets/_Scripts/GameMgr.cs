@@ -34,10 +34,10 @@ public class GameMgr : MonoBehaviour
     [HideInInspector]
     public float[][] termTable = new float[][] {
         new float[]{ 3.0f, 3.0f },
-        new float[]{ 3.0f, 0.5f, 1.5f, 3.0f },
-        new float[]{ 3.0f, 1.0f, 0.5f, 1.5f, 0.5f, 1.5f, 4.0f },
-        new float[]{ 0.5f, 1.5f, 0.5f, 1.5f, 0.5f, 0.5f, 1.5f,
-            0.5f, 0.5f, 0.5f, 0.5f, 1.5f, 1, 0.5f, 0.5f, 1.5f, 5.0f }
+        new float[]{ 3.0f, 0.5f, 1.5f, 0.0f, 3.0f },
+        new float[]{ 0.0f, 3.0f, 1.0f, 0.5f, 1.5f, 0.0f, 0.5f, 1.5f, 0.0f, 0.0f, 4.0f },
+        new float[]{ 0.0f, 0.5f, 1.5f, 0.5f, 1.5f, 0.5f, 0.5f, 0.0f, 1.5f, 
+            0.5f, 0.5f, 0.5f, 0.5f, 1.5f, 1, 0.5f, 0.5f, 0.0f, 1.5f, 0.0f, 5.0f }
     };
     int termCount = 0;
     public int TermCount
@@ -46,12 +46,15 @@ public class GameMgr : MonoBehaviour
         set { termCount = value; }
     }
 
+    bool start = false;
+
     public static GameMgr Inst = null;
 
     void Awake() { Inst = this; }
 
     void Start()
     {
+        termCount = 0;
         txt.text = "Step1";
         termTime = Random.Range(2.0f, 3.0f); //시작시 랜덤 텀
     }
@@ -61,23 +64,28 @@ public class GameMgr : MonoBehaviour
         //if (Input.GetKeyDown(KeyCode.P))
         //    SpawnNormalEvent();
 
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            start = true;
+            Debug.Log("Start");
+        }
+
+        if (!start) return;
+
         if (IsMainThread())
         {
             termTimer += Time.deltaTime;
 
             if (termTime <= termTimer)
             {
-                int qtIdx = Random.Range(0, NormalQTEvents.Length);
-                int acIdx = Random.Range(0, (int)ActionType.Length);
-                SpawnNormalEvent(qtIdx, acIdx);
+                //int qtIdx = Random.Range(0, NormalQTEvents.Length);
+                //int acIdx = Random.Range(0, (int)ActionType.Length);
+                //SpawnNormalEvent(qtIdx, acIdx);
+                SpawnNormalEvent();
 
                 termTimer = 0.0f;
                 //termTime = 0.0f;
             }
-        }
-        else
-        {
-            Debug.Log("Not Main Thread");
         }
 
         //if (MaxFailCount < failCount) // GameOver
@@ -98,35 +106,57 @@ public class GameMgr : MonoBehaviour
         return true;
     }
 
-    void SpawnNormalEvent(int qtIdx, int acIdx)
+    //void SpawnNormalEvent(int qtIdx, int acIdx)
+    void SpawnNormalEvent()
     {
+        //int repeat = GetRepeatNum();
+        //if (repeat < 0) return;
+
+        //for (int i = 0; i < repeat; i++)
+        //{
+        int qtIdx = Random.Range(0, NormalQTEvents.Length);
+        int acIdx = Random.Range(0, (int)ActionType.Length);
         NormalQTEvents[qtIdx].gameObject.SetActive(true);
         NormalQTEvents[qtIdx].SetEventInfo((ActionType)acIdx);
+        StepEventCount();
+        //}
         //NormalQTEvents[qtIdx].SetEventInfo((ActionType)acIdx, eventCount);
 
-        //NormalQTEvents[0].gameObject.SetActive(true);
-        //NormalQTEvents[0].SetActionType(ActionType.H4s);
+        //NormalQTEvents[3].gameObject.SetActive(true);
+        //NormalQTEvents[3].SetEventInfo(ActionType.H4s);
         //NormalQTEvents[0].SetActionType(ActionType.P20);
-        StepEventCount();
     }
+
+    /*
+    int GetRepeatNum()
+    {
+        if (eventCount == 4 || eventCount == 6 || eventCount == 11 || eventCount == 17
+            || eventCount == 24 || eventCount == 33 || eventCount == 35)
+            return 2;
+        else if (eventCount == 14)
+            return 3;
+
+        return -1;
+    }
+    */
 
     void StepEventCount()
     {
         eventCount++;
 
-        if (step2 == eventCount)
+        if (eventCount == step2 + 1)
         {
             txt.text = CurrentStep.Step2.ToString();
             Step = CurrentStep.Step2;
             termCount = 0;
         }
-        else if (step3 == eventCount)
+        else if (eventCount == step3 + 1)
         {
             txt.text = CurrentStep.Step3.ToString();
             Step = CurrentStep.Step3;
             termCount = 0;
         }
-        else if (step4 == eventCount)
+        else if (eventCount == step4 + 1)
         {
             txt.text = CurrentStep.Step4.ToString();
             Step = CurrentStep.Step4;

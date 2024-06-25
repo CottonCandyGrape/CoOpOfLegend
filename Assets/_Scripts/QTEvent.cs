@@ -29,8 +29,6 @@ public class QTEvent : MonoBehaviour
     ActionType aType;
     //public ActionType AType { set { aType = value; } }
 
-    int eventNum;
-
     float eventTime = 0.0f;
     float eventTimer = 0.0f;
 
@@ -136,7 +134,6 @@ public class QTEvent : MonoBehaviour
     public void SetEventInfo(ActionType actionType)
     {
         aType = actionType;
-        //eventNum = eCnt;
         Type_Txt.text = actionType.ToString() + "\n" + EType.ToString();
 
         switch (aType)
@@ -199,7 +196,7 @@ public class QTEvent : MonoBehaviour
             if (Input.GetMouseButton(0) || Input.GetMouseButton(1))
                 keyHoldTimer += Time.deltaTime;
             else
-                keyHoldTimer -= Time.deltaTime;
+                keyHoldTimer = keyHoldTimer <= 0 ? 0 : keyHoldTimer - Time.deltaTime;
         }
         else
         {
@@ -252,6 +249,14 @@ public class QTEvent : MonoBehaviour
 
     void SetTermTimer()
     {
+        Debug.Log((int)GameMgr.Inst.Step);
+        Debug.Log(GameMgr.Inst.TermCount);
+        GameMgr.Inst.TermTime =
+            GameMgr.Inst.termTable[(int)GameMgr.Inst.Step][GameMgr.Inst.TermCount];
+
+        GameMgr.Inst.TermCount++;
+
+        /*
         if (GameMgr.Inst.Step == CurrentStep.Step1)
         {
             GameMgr.Inst.TermTime = 3.0f;
@@ -260,14 +265,19 @@ public class QTEvent : MonoBehaviour
         {
             GameMgr.Inst.TermTime =
                 GameMgr.Inst.termTable[(int)CurrentStep.Step2][GameMgr.Inst.TermCount];
-
         }
         else if (GameMgr.Inst.Step == CurrentStep.Step3)
-        { 
-
+        {
+            GameMgr.Inst.TermTime =
+                GameMgr.Inst.termTable[(int)CurrentStep.Step3][GameMgr.Inst.TermCount];
         }
         else if (GameMgr.Inst.Step == CurrentStep.Step4)
-        { }
+        {
+            GameMgr.Inst.TermTime =
+                GameMgr.Inst.termTable[(int)CurrentStep.Step4][GameMgr.Inst.TermCount];
+        }
+        */
+
     }
 
     void SetClearText()

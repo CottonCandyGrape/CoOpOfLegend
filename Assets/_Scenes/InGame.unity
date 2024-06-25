@@ -243,6 +243,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Insta_Evt
       objectReference: {fileID: 0}
+    - target: {fileID: 8099426819243714211, guid: f14a5443391d2a54b9740f18574d6128, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -725,6 +729,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Kakao_Evt
       objectReference: {fileID: 0}
+    - target: {fileID: 8099426819243714211, guid: f14a5443391d2a54b9740f18574d6128, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -862,6 +870,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: X_Evt
       objectReference: {fileID: 0}
+    - target: {fileID: 8099426819243714211, guid: f14a5443391d2a54b9740f18574d6128, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -998,6 +1010,10 @@ PrefabInstance:
     - target: {fileID: 8099426819243714211, guid: f14a5443391d2a54b9740f18574d6128, type: 3}
       propertyPath: m_Name
       value: Call_Evt
+      objectReference: {fileID: 0}
+    - target: {fileID: 8099426819243714211, guid: f14a5443391d2a54b9740f18574d6128, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
