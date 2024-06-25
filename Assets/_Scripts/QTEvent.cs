@@ -79,12 +79,6 @@ public class QTEvent : MonoBehaviour
 
         if (eventTime <= eventTimer)
         {
-            if (GameMgr.Inst.Step == CurrentStep.Step5)
-            {
-                SceneManager.LoadScene("GameOver");
-                return;
-            }
-
             if (gameObject.activeSelf)
             {
                 if (!isClear) //event 시간 끝났을때 clear 하지 못했으면
@@ -111,16 +105,8 @@ public class QTEvent : MonoBehaviour
         {
             if (gameObject.activeSelf)
             {
-                if (GameMgr.Inst.Step == CurrentStep.Step5)
-                {
-                    SceneManager.LoadScene("GameOver");
-                    return;
-                }
-                else
-                {
-                    //GameMgr.Inst.Clear_txt.text = "Clear!!!"; //TODO : 지워야함.
-                    enabled = false;
-                }
+                //GameMgr.Inst.Clear_txt.text = "Clear!!!"; //TODO : 지워야함.
+                enabled = false;
             }
         }
         //클리어시

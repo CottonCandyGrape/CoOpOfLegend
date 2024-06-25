@@ -71,7 +71,7 @@ public class GameMgr : MonoBehaviour
 
     void Update()
     {
-        //if (MaxFailCount < failCount ) // GameOver
+        //if (MaxFailCount < failCount) // GameOver
         //{
         //    SceneManager.LoadScene("GameOver");
         //    return;
@@ -95,9 +95,10 @@ public class GameMgr : MonoBehaviour
 
             if (termTime <= termTimer)
             {
-                if (Step == CurrentStep.Step5)
+                if (MaxEventCount < eventCount)
                 {
                     Debug.Log("asdlfkjadsf");
+                    StepEventCount();
                     SpawnFinalEvent();
                 }
                 else

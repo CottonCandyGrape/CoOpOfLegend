@@ -5,9 +5,18 @@ using UnityEngine.SceneManagement;
 
 public class LobbyMgr : MonoBehaviour
 {
+    AudioSource audioSrc = null;
+    public AudioClip TitleClip = null;
+
     void Start()
     {
-        
+        if (audioSrc == null)
+            audioSrc = GetComponent<AudioSource>();
+
+        audioSrc.clip = TitleClip;
+        audioSrc.volume = 1.0f;
+        audioSrc.loop = true;
+        audioSrc.Play();
     }
 
     void Update()
