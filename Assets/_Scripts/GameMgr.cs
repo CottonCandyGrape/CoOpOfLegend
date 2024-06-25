@@ -174,7 +174,7 @@ public class GameMgr : MonoBehaviour
         }
         else if (Step == CurrentStep.Step4)
         {
-            if (termCount == 0 || termCount == 7 || termCount == 18 || termCount == 19 || termCount == 20)
+            if (termCount == 0 || termCount == 7 || termCount == 17 || termCount == 18 || termCount == 19)
                 return delayTime = 0.0f;
             else if (termCount == 1 || termCount == 3 || termCount == 5 || termCount == 6 ||
                 termCount == 9 || termCount == 10 || termCount == 11 || termCount == 14 || termCount == 15)
