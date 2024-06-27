@@ -65,9 +65,9 @@ public class GameMgr : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale = 1.0f;
         termCount = 0;
         termTime = Random.Range(2.0f, 3.0f); //시작시 랜덤 텀
-        //EventNum_txt.text = "Step1";
     }
 
     void Update()
@@ -81,7 +81,7 @@ public class GameMgr : MonoBehaviour
             SoundMgr.Inst.PlaySfxSound(SfxType.StageFail);
             isEnd = true;
             SetClearImage(false);
-            //SceneManager.LoadScene("GameOver");
+            StartCoroutine(GoToScene("Lobby"));
             return;
         }
 
@@ -92,20 +92,9 @@ public class GameMgr : MonoBehaviour
             SoundMgr.Inst.PlaySfxSound(SfxType.StageClear);
             isEnd = true;
             SetClearImage(true);
+            StartCoroutine(GoToScene("Ending"));
             return;
         }
-
-        //EventNum_txt.text = eventCount.ToString(); //TODO : 지워야함.
-
-        //if (Input.GetKeyDown(KeyCode.P))
-        //    SpawnNormalEvent();
-
-        //if (Input.GetKeyDown(KeyCode.Z))
-        //{
-        //    start = true;
-        //    Debug.Log("Start");
-        //}
-        //if (!start) return; //이걸 써야 인덱스 에러 안쌓이고 안난다. //nono. disable 때문인데 스크립트 끄고 시작하면됨.
 
         if (IsMainThread())
         {
@@ -115,7 +104,6 @@ public class GameMgr : MonoBehaviour
             {
                 if (MaxEventCount < eventCount)
                 {
-                    Debug.Log("asdlfkjadsf");
                     StepEventCount();
                     SpawnFinalEvent();
                 }
@@ -125,6 +113,13 @@ public class GameMgr : MonoBehaviour
                 termTimer = 0.0f;
             }
         }
+    }
+
+    IEnumerator GoToScene(string sceneName)
+    {
+        yield return new WaitForSecondsRealtime(3.0f);
+
+        SceneManager.LoadScene(sceneName);
     }
 
     void SetClearImage(bool onOff)
@@ -157,15 +152,10 @@ public class GameMgr : MonoBehaviour
 
         StepEventCount();
         termCount++;
-        //EventNum_txt.text = eventCount + " / " + termCount;
-
-        //NormalQTEvents[3].gameObject.SetActive(true);
-        //NormalQTEvents[3].SetEventInfo(ActionType.H4s);
     }
 
     void SpawnFinalEvent()
     {
-        Debug.Log("SpawnFinalEvent");
         GameObject finalObj = Instantiate(FinalQTEvents, canvas);
         QTEvent final = finalObj.GetComponent<QTEvent>();
         if (final != null) final.SetFinalInfo();
@@ -208,7 +198,6 @@ public class GameMgr : MonoBehaviour
     void StepEventCount()
     {
         eventCount++;
-        Debug.Log(Step.ToString() + " : " + eventCount);
 
         if (eventCount == step2 + 1)
         {

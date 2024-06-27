@@ -5,11 +5,17 @@ using UnityEngine.SceneManagement;
 
 public class LobbyMgr : MonoBehaviour
 {
+    public GameObject TutorialObj = null;
+    float tutorialTime = 15.0f;
+    float tutorialTimer = 0.0f;
+
     AudioSource audioSrc = null;
     public AudioClip TitleClip = null;
 
     void Start()
     {
+        Time.timeScale = 1.0f;
+
         if (audioSrc == null)
             audioSrc = GetComponent<AudioSource>();
 
@@ -21,7 +27,17 @@ public class LobbyMgr : MonoBehaviour
 
     void Update()
     {
-        if(Input.anyKeyDown)
-            SceneManager.LoadScene("InGame");
+        if (Input.anyKeyDown)
+            TutorialObj.SetActive(true);
+
+        if (TutorialObj.activeSelf)
+        {
+            tutorialTimer += Time.deltaTime;
+            if (tutorialTime <= tutorialTimer)
+            {
+                tutorialTimer = 0.0f;
+                SceneManager.LoadScene("InGame");
+            }
+        }
     }
 }
